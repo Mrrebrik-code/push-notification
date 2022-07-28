@@ -1,0 +1,18 @@
+{
+  "name": "push-notification",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mrrebrik",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^1.35.4",
+    "bcrypt": "^5.0.1",
+    "nodemon": "^2.0.19",
+    "shortid": "^2.2.16",
+    "socket.io": "^4.5.1"
+  }
+}
