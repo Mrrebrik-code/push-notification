@@ -63,12 +63,17 @@ io.on('connection', function(socket){
         console.log(dataMessage);
 
 
-        let isCreate = await db.createPushNotification(dataMessage.userId, dataMessage.urlPicture, {
-          tittle: dataMessage.tittle,
+        let messageTemp = {
+          tittle: dataMessage.tittle, 
           body: dataMessage.body
-        },
-        formatAMPM(new Date(), dataMessage.time),
-        dataMessage.idNotification);
+        }
+
+        let isCreate = await db.createPushNotification(
+          dataMessage.userId, 
+          dataMessage.urlPicture, 
+          messageTemp, 
+          formatAMPM(new Date(), dataMessage.time), 
+          dataMessage.idNotification);
 
         if(isCreate){
           console.log("Good create push!");
@@ -105,6 +110,7 @@ const send = function(data){
 
   sendNotification(msg, headers);
 }
+
 httpServer.listen(process.env.PORT, async()=>{
   console.log(`Start server from port: ${process.env.PORT}`)
   db = new Database(urlSupabase, pulicApiKeySupabse);

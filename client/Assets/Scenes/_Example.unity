@@ -216,7 +216,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 960401976}
-  - component: {fileID: 960401975}
+  - component: {fileID: 960401977}
   m_Layer: 0
   m_Name: '[PushNotification]'
   m_TagString: Untagged
@@ -224,19 +224,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &960401975
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 960401974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f7a0799c98341f4f935c1274e103bc3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _address: http://d174-5-136-100-222.eu.ngrok.io
 --- !u!4 &960401976
 Transform:
   m_ObjectHideFlags: 0
@@ -252,3 +239,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &960401977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960401974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f7a0799c98341f4f935c1274e103bc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _address: http://d174-5-136-100-222.eu.ngrok.io
