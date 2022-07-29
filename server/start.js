@@ -75,6 +75,12 @@ io.on('connection', function(socket){
         }
 
     });
+
+    socket.on("clear-notification", async (data) =>{
+      let dataMessage = JSON.parse(data);
+      console.log(dataMessage.userId)
+      await db.deleteNotificationAll(dataMessage.userId);
+    });
     
 });
 
@@ -103,9 +109,6 @@ httpServer.listen(process.env.PORT, async()=>{
   console.log(`Start server from port: ${process.env.PORT}`)
   db = new Database(urlSupabase, pulicApiKeySupabse);
 });
-
-
-
 
 setInterval(async()=>{
   let test = await db.getPushNotification();

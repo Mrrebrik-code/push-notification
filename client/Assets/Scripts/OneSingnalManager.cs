@@ -1,6 +1,4 @@
-using OneSignalSDK;
-using System.Collections;
-using System.Collections.Generic;
+﻿using OneSignalSDK;
 using UnityEngine;
 using BestHTTP.SocketIO3;
 using System;
@@ -8,24 +6,20 @@ using Newtonsoft.Json;
 
 public class OneSingnalManager : MonoBehaviour
 {
-	private const string _id = "45766648-90ee-4f47-b605-b6692516e371";
-	private const string _restApiId = "MDQzZjNlMmMtYmJiOC00ZmQ3LTk3YTItNWE1MTdkMzE5MDhi";
-	private string _idUser = "";
-
-	private SocketManager _socketManager = null;
 	[SerializeField] private string _address = "http://localhost:52300";
+	private SocketManager _socketManager = null;
 	private bool _isConnected = false;
 
-	private JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings()
-	{
-		Formatting = Formatting.Indented
-	};
+	private const string _id = "45766648-90ee-4f47-b605-b6692516e371";
+	private string _idUser = "";
+
+	private JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings() { Formatting = Formatting.Indented };
 
 	private void Start()
 	{
 		if (PlayerPrefs.HasKey("user_id") == false)
 		{
-			_idUser = System.Guid.NewGuid().ToString();
+			_idUser = Guid.NewGuid().ToString();
 			PlayerPrefs.SetString("user_id", _idUser);
 		}
 		else
@@ -33,14 +27,11 @@ public class OneSingnalManager : MonoBehaviour
 			_idUser = PlayerPrefs.GetString("user_id");
 		}
 
-		Debug.Log(_idUser);
-
 		OneSignal.Default.Initialize(_id);
 		OneSignal.Default.SetExternalUserId(_idUser);
 
 		if (_socketManager == null || _isConnected == false)
 		{
-
 			_socketManager = new SocketManager(new Uri(_address));
 
 			_socketManager.Socket.On(SocketIOEventTypes.Connect, OnConnectToServer);
@@ -48,8 +39,6 @@ public class OneSingnalManager : MonoBehaviour
 		}
 	}
 
-	[SerializeField] private string _text;
-	[SerializeField] private TMPro.TMP_InputField _textTime;
 	private void OnDisconnectToServer()
 	{
 		Debug.Log("Disconnected to server!");
@@ -60,21 +49,14 @@ public class OneSingnalManager : MonoBehaviour
 		Debug.Log("Connected to server!");
 	}
 
-	public void Send()
-	{
-		var bode = _text;
-		var url = "https://rxmtgtrpftxiysckdhfs.supabase.co/storage/v1/object/public/push/push-notification-image.png";
-
-		SendNotification(bode, url);
-	}
-	public void SendNotification(string body, string urlPicture)
+	public void SendNotification(string body, string urlPicture, string time)
 	{
 		var message = new Message()
 		{
 			userId = _idUser,
 			body = body,
 			urlPicture = urlPicture,
-			time = _textTime.text
+			time = time
 		};
 
 		string json = JsonConvert.SerializeObject(message, _jsonSerializerSettings);
@@ -82,13 +64,28 @@ public class OneSingnalManager : MonoBehaviour
 		_socketManager.Socket.Emit("create-notification", json);
 	}
 
+	private void Update()
+	{
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			ClearNotifications();
+		}
+
+		if (Input.GetKeyDown(KeyCode.F))
+		{
+			SendNotification("Чему равно выражение 4 + 4 x 4 = ?", "https://rxmtgtrpftxiysckdhfs.supabase.co/storage/v1/object/public/push/Notification.png", "1");
+		}
+	}
+
 	public void ClearNotifications()
 	{
-
+		AbstractMessage message = new UserId() { userId = _idUser };
+		var json = JsonConvert.SerializeObject(message, _jsonSerializerSettings);
+		_socketManager.Socket.Emit("clear-notification", json);
 	}
 
 	[Serializable]
-	public class Message 
+	public class Message : AbstractMessage
 	{
 		public string userId;
 		public string body;
@@ -101,5 +98,13 @@ public class OneSingnalManager : MonoBehaviour
 			idNotification = Guid.NewGuid().ToString();
 		}
 	}
+
+	[Serializable]
+	public class UserId : AbstractMessage
+	{
+		public string userId;
+	}
+
+	public abstract class AbstractMessage { }
 
 }

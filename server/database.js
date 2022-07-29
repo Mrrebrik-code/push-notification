@@ -42,10 +42,11 @@ module.exports = class Database{
     async deleteNotificationAll(userId){
         let supabase = this.supabase;
 
+        console.log(userId.toString())
         const chat = await supabase
          .from('push')
          .delete()
-         .eq("idUser", userId);
+         .eq("idUser", userId.toString());
     }
 
     async deleteNotificationTarget(userId, idNotification){
