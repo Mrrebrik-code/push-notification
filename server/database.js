@@ -7,7 +7,7 @@ module.exports = class Database{
         console.log("init database!");
     }
 
-    async createPushNotification(idUser, url, messages, date){
+    async createPushNotification(idUser, url, messages, date, idNotification){
         let supabase = this.supabase;
 
         let user = await supabase
@@ -21,7 +21,8 @@ module.exports = class Database{
                     tittle: messages.tittle,
                     body: messages.body
                 },
-                date: date
+                date: date,
+                idNotification: idNotification
             }
         ]);
 
@@ -33,8 +34,27 @@ module.exports = class Database{
 
         let user = await supabase
         .from('push')
-        .select('idUser, image, message, date');
+        .select('idUser, image, message, date, idNotification');
 
         return user.data;
+    }
+
+    async deleteNotificationAll(userId){
+        let supabase = this.supabase;
+
+        const chat = await supabase
+         .from('push')
+         .delete()
+         .eq("idUser", userId);
+    }
+
+    async deleteNotificationTarget(userId, idNotification){
+        let supabase = this.supabase;
+
+        const chat = await supabase
+         .from('push')
+         .delete()
+         .eq("idUser", userId)
+         .eq("idNotification", idNotification);
     }
 }

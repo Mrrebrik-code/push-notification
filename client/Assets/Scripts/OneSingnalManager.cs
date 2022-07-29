@@ -62,20 +62,16 @@ public class OneSingnalManager : MonoBehaviour
 
 	public void Send()
 	{
-		var tittle = "";
 		var bode = _text;
 		var url = "https://rxmtgtrpftxiysckdhfs.supabase.co/storage/v1/object/public/push/push-notification-image.png";
 
-		SendNotification(tittle, bode, url);
+		SendNotification(bode, url);
 	}
-	public void SendNotification(string tittle, string body, string urlPicture)
+	public void SendNotification(string body, string urlPicture)
 	{
 		var message = new Message()
 		{
-			appId = _id,
-			apiId = _restApiId,
 			userId = _idUser,
-			tittle = tittle,
 			body = body,
 			urlPicture = urlPicture,
 			time = _textTime.text
@@ -94,13 +90,16 @@ public class OneSingnalManager : MonoBehaviour
 	[Serializable]
 	public class Message 
 	{
-		public string appId;
-		public string apiId;
 		public string userId;
-		public string tittle;
 		public string body;
 		public string urlPicture;
 		public string time;
+		public string idNotification;
+
+		public Message()
+		{
+			idNotification = Guid.NewGuid().ToString();
+		}
 	}
 
 }

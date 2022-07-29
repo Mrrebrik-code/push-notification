@@ -1,13 +1,14 @@
-
+require("dotenv").config();
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const https = require('https');
 const httpServer = createServer();
 const moment = require('moment-timezone');
-const io = new Server(httpServer, {
-    pingTimeout: 60000
-});
-
+const urlSupabase = process.env.URLSUPABESE;
+const pulicApiKeySupabse = process.env.APISUPABASE;
+const Database = require("./database.js");
+const io = new Server(httpServer, { pingTimeout: 60000 });
+let db = null;
 
 
 var sendNotification = function(data, headers) {
@@ -36,20 +37,11 @@ var sendNotification = function(data, headers) {
     req.end();
   };
 
-let db = null;
+
 io.on('connection', function(socket){
     console.log("Player connected to server!");
 
     function formatAMPM(date, time) {
-    //     console.log(data);
-    //     var hours = date.getHours();
-    //     var minutes = date.getMinutes();
-    //     // var ampm = hours >= 12 ? 'PM' : 'AM';
-    //     // hours = hours % 12;
-    //     // hours = hours ? hours : 12; // the hour '0' should be '12'
-    //     // minutes = minutes < 10 ? '0'+minutes : minutes;
-    //     // var strTime = hours + ':' + minutes + '' + ampm;
-    //     console.log(date);
 
         date.setTime(date.getTime() + (time * 60 * 1000));
         date.setHours(date.getHours());
@@ -64,8 +56,6 @@ io.on('connection', function(socket){
         console.log(m.format('YYYY-MM-DD HH:mm:ss [GMT]ZZ'));
         return m.format('YYYY-MM-DD HH:mm:ss [GMT]ZZ');
       }
-      
-    
 
     socket.on("create-notification", async (data) =>{
        
@@ -77,15 +67,14 @@ io.on('connection', function(socket){
           tittle: dataMessage.tittle,
           body: dataMessage.body
         },
-        formatAMPM(new Date(), dataMessage.time));
+        formatAMPM(new Date(), dataMessage.time),
+        dataMessage.idNotification);
 
         if(isCreate){
           console.log("Good create push!");
         }
-      
 
     });
-
     
 });
 
@@ -93,7 +82,7 @@ const send = function(data){
 
   console.log(data.url);
   let msg = {
-    app_id: "45766648-90ee-4f47-b605-b6692516e371",
+    app_id: process.env.IDONESIGNAL,
     contents: 
     {
         "ru": data.body,
@@ -101,24 +90,20 @@ const send = function(data){
     },
     include_external_user_ids: [`${data.userId}`],
     big_picture: data.url
-    //send_after : formatAMPM(new Date(), dataMessage.time)
   };
 
   var headers = {
     "Content-Type": "application/json; charset=utf-8",
-    "Authorization": `Basic MDQzZjNlMmMtYmJiOC00ZmQ3LTk3YTItNWE1MTdkMzE5MDhi`
+    "Authorization": process.env.APIONESIGNAL
   };
 
   sendNotification(msg, headers);
 }
-httpServer.listen(52300, ()=>{
-  db = new Database(urlSupabase, pulicApiKeySupabse)
+httpServer.listen(process.env.PORT, async()=>{
+  console.log(`Start server from port: ${process.env.PORT}`)
+  db = new Database(urlSupabase, pulicApiKeySupabse);
 });
 
-const { createClient } = require('@supabase/supabase-js');
-const urlSupabase = "https://rxmtgtrpftxiysckdhfs.supabase.co";
-const pulicApiKeySupabse = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4bXRndHJwZnR4aXlzY2tkaGZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NTYwNTE2ODUsImV4cCI6MTk3MTYyNzY4NX0.NInNqTQ5XskqMu_vT8J3orDBU4k-s5EZj77rE4d4t-I";
-const Database = require("./database.js");
 
 
 
@@ -130,9 +115,9 @@ setInterval(async()=>{
     if(element != null) check(element);
   });
  
-}, 1000);
+}, 60000);
 
-let check = function(data){
+let check = async function(data){
   var dateUser = moment(data.date);
   var currentDate = moment(new Date());
   console.log(dateUser);
@@ -144,8 +129,12 @@ let check = function(data){
       body: data.message.body,
       url: data.image
     });
+
+    await db.deleteNotificationTarget(data.idUser, data.idNotification);
+
   }
   else{
     console.log("asd");
   }
 }
+
