@@ -19,7 +19,8 @@ module.exports = class Database{
                 image: url,
                 message: {
                     tittle: messages.tittle,
-                    body: messages.body
+                    bodyRU: messages.bodyRU,
+                    bodyEN: messages.bodyEN
                 },
                 date: date,
                 idNotification: idNotification

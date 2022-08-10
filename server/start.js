@@ -65,7 +65,8 @@ io.on('connection', function(socket){
 
         let messageTemp = {
           tittle: dataMessage.tittle, 
-          body: dataMessage.body
+          bodyRU: dataMessage.bodyRU,
+          bodyEN: dataMessage.bodyEN
         }
 
         let isCreate = await db.createPushNotification(
@@ -96,8 +97,8 @@ const send = function(data){
     app_id: process.env.IDONESIGNAL,
     contents: 
     {
-        "ru": data.body,
-        "en" : "Hello My Friend"
+        "ru": data.bodyRU,
+        "en" : data.bodyEN
     },
     include_external_user_ids: [`${data.userId}`],
     big_picture: data.url
@@ -124,7 +125,7 @@ setInterval(async()=>{
     if(element != null) check(element);
   });
  
-}, 60000);
+}, 5000);
 
 let check = async function(data){
   var dateUser = moment(data.date);
@@ -135,8 +136,9 @@ let check = async function(data){
   if(tes){
     send({
       userId: data.idUser,
-      body: data.message.body,
-      url: data.image
+      bodyRU: data.message.bodyRU,
+      bodyEN: data.message.bodyEN,
+      url: String(data.image)
     });
 
     await db.deleteNotificationTarget(data.idUser, data.idNotification);
